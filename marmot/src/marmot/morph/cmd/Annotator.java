@@ -63,12 +63,14 @@ public class Annotator {
 		try {
 			String pred_file = options.getPredFile();
 			Writer writer;
-			if (pred_file.isEmpty()) {
-				writer = new BufferedWriter(new OutputStreamWriter(System.out));	
-			} else {
-				writer = FileUtils.openFileWriter(pred_file);
-			}
-			annotate(tagger, options.getTestFile(), writer);
+
+			/*if (pred_file.isEmpty() || pred_file == "-") {*/
+			    writer = new BufferedWriter(new OutputStreamWriter(System.out));
+			    /*} else {
+			    writer = FileUtils.openFileWriter(pred_file);
+			    }*/
+			py_annotate(tagger, options.getTestFile(), writer);
+			//writer.flush();
 			writer.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -146,6 +148,59 @@ public class Annotator {
 			}
 			writer.append(morph);
 
+			writer.append('\n');
+		}
+		writer.append('\n');
+	
+	}
+    public static void py_annotate(MorphTagger tagger, String text_file, Writer writer) throws IOException {	
+		SentenceReader reader = new SentenceReader(text_file);
+		
+		for (Sequence sequence : reader) {
+			py_annotate(tagger, sequence, writer);
+		}
+	}
+    public static void py_annotate(MorphTagger tagger, Sequence sequence, Writer writer) throws IOException {
+		Sentence sentence = (Sentence) sequence;
+		
+		if (sentence.isEmpty()) {
+			System.err.println("Warning: Skipping empty sentence!");
+			return;
+		}
+		
+		List<List<String>> lemma_tags;
+		
+		try {
+		
+		lemma_tags = tagger.tagWithLemma(sentence);
+		
+		} catch (OutOfMemoryError e) {
+			
+			lemma_tags = new ArrayList<List<String>>(sentence.size());
+			
+			List<String> lemma_tag = Arrays.asList(EMPTY_, EMPTY_);
+			
+			for (int index = 0; index < sentence.size(); index ++) {
+				lemma_tags.add(lemma_tag);
+			}
+			
+			System.err.format("Warning: Can't tag sentence of length: %d (Not enough memory)!\n", sentence.size());
+			
+		}
+		
+		for (int i = 0; i < sentence.size(); i ++) {
+			Word word = sentence.getWord(i);
+			
+			List<String> token_lemma_tags = lemma_tags.get(i);
+			String lemma = token_lemma_tags.get(0);
+			
+			writer.append("(");
+			writer.append(word.getWordForm());
+			writer.append(", ");
+			writer.append(word.getPosTag() != null ? word.getPosTag() : EMPTY_ );
+			writer.append(", ");
+			writer.append(lemma != null ? lemma : EMPTY_ );
+			writer.append(")");
 			writer.append('\n');
 		}
 		writer.append('\n');
