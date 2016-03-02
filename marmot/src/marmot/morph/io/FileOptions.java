@@ -3,6 +3,7 @@
 
 package marmot.morph.io;
 
+import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -142,7 +143,6 @@ public class FileOptions {
 	public InputStream getInputStream() {
 
 		InputStream input_stream = null;
-
 		try {
 
 			if (filename_.toLowerCase().startsWith("res://")) {
@@ -154,9 +154,12 @@ public class FileOptions {
 					throw new RuntimeException("Resource not found: " + filename_);
 				}
 				
-			} else {
+			} else if (filename_.equals("-")) {
+			    input_stream = System.in;
+			}
+			else {
 			
-				input_stream = new FileInputStream(filename_);
+			    input_stream = new FileInputStream(filename_);
 				
 			}
 			

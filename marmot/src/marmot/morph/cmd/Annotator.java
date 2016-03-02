@@ -64,11 +64,11 @@ public class Annotator {
 			String pred_file = options.getPredFile();
 			Writer writer;
 
-			/*if (pred_file.isEmpty() || pred_file == "-") {*/
+			if (pred_file.isEmpty() || pred_file.equals("-")) {
 			    writer = new BufferedWriter(new OutputStreamWriter(System.out));
-			    /*} else {
+			 } else {
 			    writer = FileUtils.openFileWriter(pred_file);
-			    }*/
+			    }
 			py_annotate(tagger, options.getTestFile(), writer);
 			//writer.flush();
 			writer.close();
