@@ -201,13 +201,14 @@ public class Annotator {
 			
 			List<String> token_lemma_tags = lemma_tags.get(i);
 			String lemma = token_lemma_tags.get(0);
-			
+			String pos = token_lemma_tags.get(1);
+	     			
 			writer.append("(");
 			writer.append(word.getWordForm());
 			writer.append(", ");
-			writer.append(word.getPosTag() != null ? word.getPosTag() : EMPTY_ );
+			writer.append(pos);
 			writer.append(", ");
-			writer.append(lemma != null ? lemma : EMPTY_ );
+			writer.append(lemma);
 			writer.append(")");
 			if (i < (sentence.size() -1)) {
 			    writer.append(", ");
