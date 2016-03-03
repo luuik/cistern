@@ -24,6 +24,7 @@ import marmot.morph.Word;
 import marmot.morph.io.SentenceReader;
 import marmot.util.FileUtils;
 import marmot.util.Sys;
+import java.util.Iterator;
 
 public class Annotator {
 	
@@ -155,9 +156,15 @@ public class Annotator {
 	}
     public static void py_annotate(MorphTagger tagger, String text_file, Writer writer) throws IOException {	
 		SentenceReader reader = new SentenceReader(text_file);
-		
-		for (Sequence sequence : reader) {
+
+		Iterator<Sequence> ite = reader.iterator();
+
+		//System.out.println("PY ANNOTATE");
+		while (true) {
+		    if (ite.hasNext()) {
+			Sequence sequence = ite.next();
 			py_annotate(tagger, sequence, writer);
+		    }
 		}
 	}
     public static void py_annotate(MorphTagger tagger, Sequence sequence, Writer writer) throws IOException {
@@ -187,7 +194,8 @@ public class Annotator {
 			System.err.format("Warning: Can't tag sentence of length: %d (Not enough memory)!\n", sentence.size());
 			
 		}
-		
+
+		writer.append("(");
 		for (int i = 0; i < sentence.size(); i ++) {
 			Word word = sentence.getWord(i);
 			
@@ -201,9 +209,11 @@ public class Annotator {
 			writer.append(", ");
 			writer.append(lemma != null ? lemma : EMPTY_ );
 			writer.append(")");
-			writer.append('\n');
+			if (i < (sentence.size() -1)) {
+			    writer.append(", ");
+			}
 		}
-		writer.append('\n');
+		writer.append(")\n");
 	
 	}
 }
