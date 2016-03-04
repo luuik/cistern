@@ -71,7 +71,7 @@ public class Annotator {
 			    writer = FileUtils.openFileWriter(pred_file);
 			    }
 			py_annotate(tagger, options.getTestFile(), writer);
-			//writer.flush();
+			writer.flush();
 			writer.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -164,6 +164,7 @@ public class Annotator {
 		    if (ite.hasNext()) {
 			Sequence sequence = ite.next();
 			py_annotate(tagger, sequence, writer);
+			writer.flush();
 		    }
 		}
 	}
