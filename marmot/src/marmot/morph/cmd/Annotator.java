@@ -66,7 +66,7 @@ public class Annotator {
 			Writer writer;
 
 			if (pred_file.isEmpty() || pred_file.equals("-")) {
-			    writer = new BufferedWriter(new OutputStreamWriter(System.out));
+			    writer = new BufferedWriter(new OutputStreamWriter(System.out,"UTF-8"));
 			 } else {
 			    writer = FileUtils.openFileWriter(pred_file);
 			    }
@@ -196,7 +196,7 @@ public class Annotator {
 			
 		}
 
-		writer.append("(");
+		writer.append("[");
 		for (int i = 0; i < sentence.size(); i ++) {
 			Word word = sentence.getWord(i);
 			
@@ -204,18 +204,19 @@ public class Annotator {
 			String lemma = token_lemma_tags.get(0);
 			String pos = token_lemma_tags.get(1);
 	     			
-			writer.append("(");
-			writer.append(word.getWordForm());
-			writer.append(", ");
+			writer.append("('");
+			writer.append(word.getWordForm().replaceAll("'", "\\\\'"));
+			writer.append("', '");
 			writer.append(pos);
-			writer.append(", ");
-			writer.append(lemma);
-			writer.append(")");
+			writer.append("', '");
+			writer.append(lemma.replaceAll("'", "\\\\'"));
+			writer.append("')");
 			if (i < (sentence.size() -1)) {
 			    writer.append(", ");
 			}
 		}
-		writer.append(")\n");
+		writer.append("]\n");
+		writer.append("\n");
 	
 	}
 }
